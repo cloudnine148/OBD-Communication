@@ -1,4 +1,3 @@
-//Available vehicleSpeed, engineRPM
 #pragma once
 #pragma once
 #include "SerialPort.h"
