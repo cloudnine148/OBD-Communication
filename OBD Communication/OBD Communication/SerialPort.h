@@ -1,3 +1,4 @@
+//Available vehicleSpeed, engineRPM
 #pragma once
 #pragma once
 #include <Windows.h>

@@ -1,3 +1,4 @@
+//Available vehicleSpeed, engineRPM
 #include "SerialComm.h"
 CSerialComm::CSerialComm() {}
 CSerialComm::~CSerialComm() {}
