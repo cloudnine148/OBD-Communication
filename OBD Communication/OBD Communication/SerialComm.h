@@ -18,7 +18,6 @@ public:
 
 	CSerialPort	serial;
 	int		connect(char* _portNum);
-	vector<int>	sendObdCommand(string command);
 	string sendGenCommand(string setCommand);
 	void vehicleSpeed(int &speed);
 	void engineRPM(int &rpm);

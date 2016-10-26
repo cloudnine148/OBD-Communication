@@ -26,10 +26,11 @@ private:
 public:
 	void ClosePort();
 	bool readResponse(char &resp);
-	bool readResponse(BYTE* &resp, UINT size);
+	//send pidValue Command
+	bool runCommand(byte * cmd, char * data, unsigned int dataLength);
+	//send AT Command
 	bool runCommand(const char *cmd, char *data, unsigned int dataLength);
-	bool runCommand(byte *cmd, char *data, unsigned int dataLength);
-	void getBytes(const char*mode, const char *chkMode, const char *pid, byte *values, unsigned int numValue);
+	void getBytes(byte *cmd, byte *values, unsigned int numValue);
 	bool OpenPort(CString portname);
 	bool SetCommunicationTimeouts(DWORD ReadIntervalTimeout,
 		DWORD ReadTotalTimeoutMultiplier, DWORD ReadTotalTimeoutConstant,

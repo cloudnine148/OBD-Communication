@@ -137,41 +137,22 @@ bool CSerialPort::readResponse(char &resp)
 	return false; //실패했을 경우 false 반환
 }
 
-bool CSerialPort::readResponse(BYTE* &resp, UINT size)
+
+void CSerialPort::getBytes(byte *cmd, byte *values, unsigned int numValue)
 {
-	DWORD dwBytesTransferred = 0;
-
-	if (ReadFile(m_hComm, resp, size, &dwBytesTransferred, 0))
-	{
-		if (dwBytesTransferred == size)
-			return true;
-	}
-
-	return false;
-}
-void CSerialPort::getBytes(const char*mode, const char *chkMode, const char *pid, byte *values, unsigned int numValue)
-{
-
-	char data[64] = "";
-	byte cmd[6] = "010D\r";
-
-	char hexVal[] = "0x00";
-	/*
-	char cmd[6];
-	cmd[0] = mode[0];
-	cmd[1] = mode[1];
-	cmd[2] = ' ';
-	cmd[3] = pid[0];
-	cmd[4] = pid[1];
-	cmd[5] = '\r';
-	*/
-	runCommand(cmd, data, 5);
 	int i;
 	int counter = 0;
 	bool aFlag = true;
-	while (counter < 64 && aFlag == true)
+	char data[32] = "";
+	char hexVal[] = "0x00";
+
+	runCommand(cmd, data, 5);
+
+	//수신 메세지에 Prompt character('>')가 들어올때까지 data 배열에 저장
+	while (counter < 32 && aFlag == true)
 	{
 		readResponse(data[counter]);
+		//erase Prompt chracter
 		if (data[counter] == '>')
 		{
 			data[counter] = '\0';
@@ -179,14 +160,15 @@ void CSerialPort::getBytes(const char*mode, const char *chkMode, const char *pid
 		}
 		counter++;
 	}
-
+	//수신받은 메세지의 데이터 형태는 16진수 이므로 변환해서 value배열에 저장
+	//41 0D FF FF <-RPM(2바이트 필요)
+	//41 0D FF <-speed(1바이트 필요)
 	for (i = 0; i < numValue; i++)
 	{
 		hexVal[2] = data[6 + (2 * i)];
 		hexVal[3] = data[7 + (2 * i)];
 		values[i] = strtol(hexVal, NULL, 16);
 	}
-
 }
 
 void CSerialPort::ClosePort()

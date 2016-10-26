@@ -3,10 +3,13 @@ c:\users\lenovo\source\repos\obd-communication\obd communication\obd communicati
 c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(55): warning C4800: 'BOOL': 'true' 또는 'false'로 bool 값을 강제하고 있습니다(성능 경고).
 c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(72): warning C4800: 'BOOL': 'true' 또는 'false'로 bool 값을 강제하고 있습니다(성능 경고).
 c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(83): warning C4800: 'BOOL': 'true' 또는 'false'로 bool 값을 강제하고 있습니다(성능 경고).
-c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(183): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(187): warning C4244: '=': 'long'에서 'byte'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  SerialComm.cpp
-  main.cpp
+c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(166): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+c:\users\lenovo\source\repos\obd-communication\obd communication\obd communication\serialport.cpp(170): warning C4244: '=': 'long'에서 'byte'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  SerialComm.cpp
+  코드를 생성하고 있습니다...
+  건너뛰고 있습니다... (관련된 변경 내용 없음)
+  main.cpp
   OBD Communication.vcxproj -> C:\Users\lenovo\Source\Repos\OBD-Communication\OBD Communication\Debug\OBD Communication.exe
   OBD Communication.vcxproj -> C:\Users\lenovo\Source\Repos\OBD-Communication\OBD Communication\Debug\OBD Communication.pdb (Partial PDB)
