@@ -4,25 +4,39 @@
 #include "SerialComm.h"
 #include <stdlib.h>
 #include <windows.h>
+
+//콘솔창 출력할 위치
+#define WINDOW_POSITION_RATIO_WIDTH 0.8
+#define	WINDOW_POSITION_RATIO_HEIGHT 0.3 
+
 using namespace std;
+
+CSerialComm serialComm; //SerialComm 객체 생성
 time_t curr_time;
 tm *curr_tm;
 FILE *fp1;
+
 void getCurrentTime(int speed);
 void writeData(int curYear, int curMonth, int curDay, int curHour, int curMin, int curSec, int speed);
-
+void intializeConsoleWindow();
+void CtrlHandler(DWORD fdwCtrlType);
 int main()
 {
+	//콘솔프로그램 초기 설정 
+	intializeConsoleWindow();
+
 	int currentRPM = 0;
 	int currentSpeed = 0;
 	string response;
-	CSerialComm serialComm; //SerialComm 객체 생성
-	fopen_s(&fp1, "data.txt", "a");
-	serialComm.disconnect();
-	//Open COM4 port
+
+	fopen_s(&fp1,"data.txt", "a");
+	
+
+	//Open COM4 port OBD Dongle
 	if (!serialComm.connect("COM4")) 
 	{
 		cout << "connect faliled" << endl;
+		Sleep(2000);
 		return -1;
 	}
 	else
@@ -40,15 +54,18 @@ int main()
 	response = serialComm.sendGenCommand("AT SP 0");
 	cout << response << endl;
 	Sleep(300);
-	
+
+	//get vehicle Speed	
 	while (true)
 	{ 
+		//CTRL+C이벤트가 발생하면 데이터기록, OBD 연결 모두 해제
+		SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 		//serialComm.engineRPM(currentRPM);
 		//cout << "Current RPM : " << currentRPM <<" RPM"<< endl;
 		serialComm.vehicleSpeed(currentSpeed);
 		getCurrentTime(currentSpeed);
-		Sleep(70);
-		system("cls");
+		//1초에 2번 속도 측정
+		Sleep(500);
 	}
 	return 0;
 }
@@ -63,12 +80,59 @@ void getCurrentTime(int speed)
 	int curHour = curr_tm->tm_hour;
 	int curMin = curr_tm->tm_min;
 	int curSec = curr_tm->tm_sec;
-	cout << curYear << "년" << curMonth << "월" << curDay << "일\t" << curHour << " : " << curMin << " : " << curSec<<"\t"<<speed<<"km/h";
+	cout << speed << " km/h" << endl;
 	writeData(curYear, curMonth, curDay, curHour, curMin, curSec,speed);
 }
 
 void writeData(int curYear, int curMonth, int curDay, int curHour, int curMin, int curSec, int speed)
 {
-	fprintf_s(fp1, "%d년%d월%d일  %d : %d : %d\t %dkm/h\n", curYear, curMonth, curDay, curHour, curMin, curSec,speed);
+	fprintf_s(fp1, "%d %d %d %d %d %d %d\n", curYear, curMonth, curDay, curHour, curMin, curSec,speed);
 }
 
+void intializeConsoleWindow()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	HWND hwnd = GetConsoleWindow();
+	LONG style = GetWindowLong(hwnd, GWL_STYLE);
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	CONSOLE_FONT_INFOEX fontInfo;
+
+	//커서 숨기기
+	cursorInfo.bVisible = FALSE;
+	cursorInfo.dwSize = 1;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+
+	//제목 표시줄 숨기기
+	style &= ~(WS_BORDER | WS_CAPTION | WS_THICKFRAME);
+	SetWindowLong(hwnd, GWL_STYLE, style);
+	SetWindowPos(hwnd, NULL, 0, 0, 0, 0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE	| SWP_FRAMECHANGED);
+	//콘솔 배경 검은색
+	system("color 00");
+
+	//출력 텍스트 색(노란색)
+	SetConsoleTextAttribute(hConsole, 14);
+	//출력 텍스트 크기
+	fontInfo.cbSize = sizeof(fontInfo);
+	fontInfo.nFont = 0;
+	fontInfo.dwFontSize.X = 0;
+	fontInfo.dwFontSize.Y = 24;
+	fontInfo.FontFamily = FF_DONTCARE;
+	fontInfo.FontWeight = FW_NORMAL;
+	SetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo);
+	//창크기 최소화 / 세로2, 가로11
+	system("mode con: lines=2 cols=11");
+
+	//콘솔프로그램을 띄울 위치
+	//모니터 해상도 크기 로드
+	int resWidth = GetSystemMetrics(SM_CXSCREEN);
+	int resHeight = GetSystemMetrics(SM_CYSCREEN);
+	SetWindowPos(hwnd, NULL, resWidth*WINDOW_POSITION_RATIO_WIDTH, resHeight*WINDOW_POSITION_RATIO_WIDTH,10,20,SWP_NOSIZE);
+	}
+void CtrlHandler(DWORD fdwCtrlType)
+{
+	if (fdwCtrlType == CTRL_C_EVENT)
+	{
+		serialComm.disconnect();
+		system("exit");
+	}
+}
