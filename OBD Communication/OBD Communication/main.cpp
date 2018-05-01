@@ -4,6 +4,7 @@
 #include "SerialComm.h"
 #include <stdlib.h>
 #include <windows.h>
+#include <chrono>
 
 //콘솔창 출력할 위치
 #define WINDOW_POSITION_RATIO_WIDTH 0.8
@@ -23,7 +24,7 @@ void CtrlHandler(DWORD fdwCtrlType);
 int main()
 {
 	//콘솔프로그램 초기 설정 
-	intializeConsoleWindow();
+	//intializeConsoleWindow();
 
 	int currentRPM = 0;
 	int currentSpeed = 0;
@@ -32,8 +33,8 @@ int main()
 	fopen_s(&fp1,"data.txt", "a");
 	
 
-	//Open COM4 port OBD Dongle
-	if (!serialComm.connect("COM4")) 
+	//Open COM5 port OBD Dongle
+	if (!serialComm.connect("COM5")) 
 	{
 		cout << "connect faliled" << endl;
 		Sleep(2000);
@@ -42,30 +43,31 @@ int main()
 	else
 		cout << "connect successed" << endl;
 	
-	//sending the "OBD2 initialize" command
-	response = serialComm.sendGenCommand("AT Z");
-	cout << response << endl;
-	Sleep(300);
-	//sending the "echo off" command
-	response = serialComm.sendGenCommand("AT E0");
-	cout << response << endl;
-	//sending the "protocol auto scanning" command
-	Sleep(300);
-	response = serialComm.sendGenCommand("AT SP 0");
-	cout << response << endl;
-	Sleep(300);
-
 	//get vehicle Speed	
 	while (true)
 	{ 
+#ifdef TIME_CHECK
+		chrono::system_clock::time_point start = chrono::system_clock::now();
 		//CTRL+C이벤트가 발생하면 데이터기록, OBD 연결 모두 해제
 		SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 		//serialComm.engineRPM(currentRPM);
 		//cout << "Current RPM : " << currentRPM <<" RPM"<< endl;
 		serialComm.vehicleSpeed(currentSpeed);
 		getCurrentTime(currentSpeed);
-		//1초에 2번 속도 측정
+		//1초에 10번 속도 측정
 		Sleep(500);
+		chrono::duration<double> sec = chrono::system_clock::now() - start;
+		cout << "Processing time : " << sec.count() << " s" << endl;
+#elif
+		//CTRL+C이벤트가 발생하면 데이터기록, OBD 연결 모두 해제
+		SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
+		//serialComm.engineRPM(currentRPM);
+		//cout << "Current RPM : " << currentRPM <<" RPM"<< endl;
+		serialComm.vehicleSpeed(currentSpeed);
+		getCurrentTime(currentSpeed);
+		//1초에 10번 속도 측정
+		Sleep(100);
+#endif
 	}
 	return 0;
 }

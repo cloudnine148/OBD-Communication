@@ -4,3 +4,5 @@
 
 /OBD Communication/OBD Communication.VC.VC.opendb
 *.opensdf
+*.VC.db
+/OBD Communication/OBD Communication/x64/Debug

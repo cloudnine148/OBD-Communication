@@ -4,11 +4,31 @@ CSerialComm::~CSerialComm() {}
 
 int CSerialComm::connect(char* portNum)
 {
+	string response = "";
 	if (!serial.OpenPort(portNum)) //포트를 오픈하고 오픈에 실패하였으면 fail을 반환한다.
 		return RETURN_FAIL;
 
-	serial.ConfigurePort(CBR_115200, 8, FALSE, NOPARITY, ONESTOPBIT); //포트 기본값을 설정한다.
+	serial.ConfigurePort(CBR_9600, 8, FALSE, NOPARITY, ONESTOPBIT); //포트 기본값을 설정한다.
 	serial.SetCommunicationTimeouts(0, 0, 0, 0, 0); //Timeout값 설정
+
+	response = sendGenCommand("0100");		// just to make sure buffer is clear
+	cout << "response : " << response << endl;
+	Sleep(100);
+	response = sendGenCommand("ATZ");		// OBD reset
+	cout << "response : " << response << endl;
+	Sleep(100);
+	response = sendGenCommand("ATE0");		// Disable echo
+	cout << "response : " << response << endl;
+	Sleep(100);
+	response = sendGenCommand("ATL0");		// Disable line feeds
+	cout << "response : " << response << endl;
+	Sleep(100);
+	response = sendGenCommand("ATS0");		// Disable spaces
+	cout << "response : " << response << endl;
+	Sleep(100);
+	response = sendGenCommand("ATSP0");	// OBD protocol auto detection mode
+	cout << "response : " << response << endl;
+	Sleep(100);
 
 	return RETURN_SUCCESS;
 }
@@ -26,7 +46,7 @@ string CSerialComm::sendGenCommand(string setCommand)
 
 	strcpy_s(sendCommand, setCommand.length() + 1, setCommand.c_str());
 
-	serial.runCommand(sendCommand, data, 20);
+	serial.runCommand(sendCommand, data, setCommand.length());
 
 	//obd2는 입력 가능상태일때 '>'송신
 	//prompt character '>'가 들어올때까지 read
@@ -46,6 +66,7 @@ string CSerialComm::sendGenCommand(string setCommand)
 	{
 		if (data[i] != '>')
 			response += data[i];
+		else break;
 	}
 	return response;
 }
