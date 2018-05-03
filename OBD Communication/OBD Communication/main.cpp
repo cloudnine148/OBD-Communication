@@ -34,7 +34,7 @@ int main()
 	
 
 	//Open COM5 port OBD Dongle
-	if (!serialComm.connect("COM5")) 
+	if (!serialComm.connect("COM3")) 
 	{
 		cout << "connect faliled" << endl;
 		Sleep(2000);
@@ -50,14 +50,14 @@ int main()
 		chrono::system_clock::time_point start = chrono::system_clock::now();
 		//CTRL+C이벤트가 발생하면 데이터기록, OBD 연결 모두 해제
 		SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
-		//serialComm.engineRPM(currentRPM);
-		//cout << "Current RPM : " << currentRPM <<" RPM"<< endl;
-		serialComm.vehicleSpeed(currentSpeed);
-		getCurrentTime(currentSpeed);
+		serialComm.engineRPM(currentRPM);
+		//serialComm.vehicleSpeed(currentSpeed);
+		cout << "Current RPM : " << currentRPM <<" RPM"<< endl;
+		//getCurrentTime(currentSpeed);
 		//1초에 10번 속도 측정
-		Sleep(500);
+		//Sleep(10);
 		chrono::duration<double> sec = chrono::system_clock::now() - start;
-		cout << "Processing time : " << sec.count() << " s" << endl;
+		//cout << "Processing time : " << sec.count() << " s" << endl;
 #elif
 		//CTRL+C이벤트가 발생하면 데이터기록, OBD 연결 모두 해제
 		SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
