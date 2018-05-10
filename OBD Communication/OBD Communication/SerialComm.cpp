@@ -64,7 +64,7 @@ string CSerialComm::sendGenCommand(string setCommand)
 
 	for (i = 0; i < 64; i++)
 	{
-		if (data[i] != '>')
+		if (data[i] != '\r')
 			response += data[i];
 		else break;
 	}
@@ -80,7 +80,7 @@ void CSerialComm::vehicleSpeed(int &speed)
 }
 void CSerialComm::engineRPM(int &rpm)
 {
-	byte sendOBDcmd[6] = "010C\r";
+	byte sendOBDcmd[7] = "010C\r";
 	byte resValues[2];
 
 	serial.getBytes(sendOBDcmd, resValues, 2);
@@ -89,4 +89,15 @@ void CSerialComm::engineRPM(int &rpm)
 void CSerialComm::disconnect() //포트를 다 쓰고 난뒤 닫는 함수
 {
 	serial.ClosePort();
+}
+
+double CSerialComm::getVolt(double current_volt)
+{
+	double cur_volt = 0.0;
+	byte sendOBDcmd[6] = "ATRV\r";
+	byte resValues[2];
+
+	serial.getBytes(sendOBDcmd, resValues, 2);
+	cur_volt = ((double)resValues[0] + (double)resValues[1]);
+	return cur_volt;
 }

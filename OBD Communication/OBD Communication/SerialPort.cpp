@@ -143,13 +143,13 @@ void CSerialPort::getBytes(byte *cmd, byte *values, unsigned int numValue)
 	int i;
 	int counter = 0;
 	bool aFlag = true;
-	char data[32] = "";
+	char data[64] = "";
 	char hexVal[] = "0x00";
 
 	runCommand(cmd, data, 5);
 
 	//수신 메세지에 Prompt character('>')가 들어올때까지 data 배열에 저장
-	while (counter < 32 && aFlag == true)
+	while (counter <64 && aFlag == true)
 	{
 		readResponse(data[counter]);
 		//erase Prompt chracter
@@ -165,8 +165,8 @@ void CSerialPort::getBytes(byte *cmd, byte *values, unsigned int numValue)
 	//41 0D FF <-speed(1바이트 필요)
 	for (i = 0; i < numValue; i++)
 	{
-		hexVal[2] = data[6 + (2 * i)];
-		hexVal[3] = data[7 + (2 * i)];
+		hexVal[2] = data[4 + (2 * i)];
+		hexVal[3] = data[5 + (2 * i)];
 		values[i] = strtol(hexVal, NULL, 16);
 	}
 }

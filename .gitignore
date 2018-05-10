@@ -6,3 +6,4 @@
 *.opensdf
 *.VC.db
 /OBD Communication/OBD Communication/x64/Debug
+/OBD Communication/OBD Communication/x64/Release/OBD Communication.log

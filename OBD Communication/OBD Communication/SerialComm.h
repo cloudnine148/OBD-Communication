@@ -22,4 +22,5 @@ public:
 	void vehicleSpeed(int &speed);
 	void engineRPM(int &rpm);
 	void disconnect();
+	double getVolt(double current_volt);
 };
